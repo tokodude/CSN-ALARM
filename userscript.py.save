@@ -1,0 +1,345 @@
+import os                   #LINUX FUNCTIES
+import sys                  #SYS FUNCTIES
+import time                 #TIJD FUNCTIES
+import RPi.GPIO as GPIO     #GPIO FUNCTIE
+import os                   #LINUX FUNCTIES
+import sys                  #SYS FUNCTIES
+import time                 #TIJD FUNCTIES
+import RPi.GPIO as GPIO     #GPIO FUNCTIE
+import getpass              #Password module
+import picamera             #Camera module
+from time import sleep      #Voor camera module
+GPIO.setmode(GPIO.BCM)      #GPIO NUMMERS (BOARD = PIN NUMMERS)
+GPIO.setwarnings(False)     #GEEN WARNINGS
+GPIO.setup(17,GPIO.OUT)     #RODE LAMP 1
+GPIO.setup(27,GPIO.OUT)     #RODE LAMP 2
+GPIO.setup(18,1)            #BUZZER ALARM
+GPIO.setup(25, GPIO.IN)     #BUTTON 3
+GPIO.setup(4,GPIO.IN)       #MOTION SENSOR BCM
+GPIO.setup(23,GPIO.OUT)     #2 GROENE LED'S
+GPIO.output(23,GPIO.HIGH)   #2 GROENE LED'S
+GPIO.setup(24, GPIO.IN)     #KNOP 1
+GPIO.setup(22, GPIO.IN)     #KNOP 2
+
+while True: # SCRIPT VOOR DE BUTTONS .1 START --> GAAT DOOR NAAR LOGIN SCRIPT
+    if ( GPIO.input(24) == False ):
+        print ("(----------------------------------------)")
+        print("--KNOP INGEDRUKT")
+        print ("(----------------------------------------)")
+        print ("")
+        GPIO.output(23,0)
+        time.sleep(.24)
+        GPIO.output(23,1)
+        time.sleep(.24)
+        time.sleep(2)
+        break
+    if ( GPIO.input(22) == False ):
+        print ("(----------------------------------------)")
+        print("--SYSTEEM UITGESCHAKELD \n--FIJNE DAG VERDER!")
+        print ("(----------------------------------------)")
+        GPIO.output(23,0)
+        time.sleep(.22)
+        GPIO.output(23,1)
+        time.sleep(.22)
+        time.sleep(2)
+        GPIO.cleanup()
+        sys.exit()
+    else:
+        os.system('clear')
+        print ("(--------------------------------------------------------------)")
+        print ("--DRUK OP DE AAN KNOP OM HET SYSTEEM TE STARTEN.")
+        print ("--OF DRUK OP DE EXIT KNOP OM HET ALARM SYSTEEM UIT TE SCHAKELEN.")
+        print ("(--------------------------------------------------------------)")
+        os.system ("date")
+        time.sleep(1)
+
+
+def login(): # LOGIN SCRIPT
+    try:
+        print ("(---------------------------------------------)")
+        print("--WELKOM BIJ SECURITY SYSTEM ROOKWORST 2.0 \n--LOGIN OM TOEGANG TE KRIJGEN TOT UW STYSTEEM:!")
+        print ("(---------------------------------------------)")
+        username = raw_input("Voer je gebruikersnaam in:")
+        password = raw_input("Voer je wachtwoord in:")
+        usernamedata = open('username.txt', 'r')
+        passwordata = open('password.txt', 'r')
+        check1 = usernamedata.read()
+        check2 = passwordata.read()
+
+        if username == str(check1) and password == str(check2):
+            print ("")
+            print ("(----------------------------------------)")
+            print ("Login Succesfully! Welcome " + usernamedata.read())
+            print ("(----------------------------------------)")
+            usernamedata.close()
+            passwordata.close()
+        else:
+            print ("Sorry de gegeven gevens zijn incorrect...Tot ziens!")
+            time.sleep(8)
+            GPIO.cleanup()
+            sys.exit(0)
+    except ( GPIO.input(22) == False ): #KNOP 2 UITSCHAKELEN SCRIPT
+            print ("(----------------------------------------)")
+            print("--SYSTEEM UITGESCHAKELD \n--FIJNE DAG VERDER!")
+            print ("(----------------------------------------)")
+            GPIO.output(22,0)
+            time.sleep(.23)
+            GPIO.output(22,1)
+            time.sleep(.23)
+            time.sleep(2)
+            GPIO.cleanup()
+            sys.exit()
+    except KeyboardInterrupt:
+            print ("\n terminated by user")
+            GPIO.cleanup()
+            sys.exit()
+login()
+
+while True:
+    KEUZE = 0
+    count = 0
+    print ("")
+    print ("WAT WIL JE GAAN DOEN? KIES UIT HET VOLGENDE:")
+    print ("")
+    print ("-->1. DE RODE LAMPJES LATEN KNIPPEREN")
+    print ("-->2. DE GROENE LAMPJES LATEN KNIPPEREN")
+    print ("-->3. DE GROENE & RODE LAMPJES LATEN KNIPPEREN")
+    print ("-->4. LICHTSENSOR")
+    print ("-->5. ALARM TESTEN")
+    print ("-->6. MOTION DETECTION STARTEN")
+    print ("-->7. SYSTEEM UITSCHAKELEN")
+    print ("-->8. MINI-PROJECT CIJFER BEREKENEN")
+    print ("-->9. ALARM SYSTEEM EXTRA VAGANZA")
+    print ("-->10. WACHTWOORD WIJZIGEN")
+    print ("-->11. FOTO MAKEN.")
+    print ("-->12. VIDEO MAKEN.")
+    print ("-->13. MOTION SENSOR + CAMERA.")
+    print ("")
+    KEUZE = input("MAAK EEN KEUZE UIT: 1, 2, 3 , 4, 5, 6, 7, 8, 9, 10, 11, 12, 13: ")
+    print ("")
+
+    if KEUZE == 1:
+            os.system('clear')
+            print ("")
+            print ("JE KOOS VOOR DE OPTIE: RODE LAMPJES LATEN KNIPPEREN.")
+            count = input("HOE VAAK WIL JE HET LATEN KNIPPEREN? ")
+            while count > 0:
+                    GPIO.output(27,GPIO.HIGH)
+                    GPIO.output(17,GPIO.HIGH)
+                    time.sleep(1)
+                    GPIO.output(27,GPIO.LOW)
+                    GPIO.output(17,GPIO.LOW)
+                    time.sleep(1)
+                    count = count - 1
+    if KEUZE == 2:
+            os.system('clear')
+            print ("")
+            print ("JE KOOS VOOR DE OPTIE: RODE LAMPJES LATEN KNIPPEREN.")
+            count = input("HOE VAAK WIL JE HET LATEN KNIPPEREN? ")
+            while count > 0:
+                    GPIO.output(23,GPIO.HIGH)
+                    time.sleep(1)
+                    GPIO.output(23,GPIO.LOW)
+                    time.sleep(1)
+                    count = count - 1
+    if KEUZE == 3:
+            os.system('clear')
+            print ("DE GROENE & RODE LAMPJES LATEN KNIPPEREN.")
+            count = input("HOE VAAK WIL JE HET LATEN KNIPPEREN? ")
+            while count > 0:
+                GPIO.output(27,GPIO.HIGH)
+                GPIO.output(17,GPIO.HIGH)
+                GPIO.output(23,GPIO.HIGH)
+                time.sleep(1)
+                GPIO.output(27,GPIO.LOW)
+                GPIO.output(17,GPIO.LOW)
+                GPIO.output(23,GPIO.LOW)
+                time.sleep(1)
+                count = count - 1
+    if KEUZE == 4:
+            os.system("clear")
+            print ("(-----------------------------------)")
+            print ("JE KOOS VOOR DE OPTIE: LICHTSENSOR")
+            print ("(-----------------------------------)")
+            print ("--LICHTSENSOR WORDT GESTART \n--LAGE VALUE GEEFT AAN DAT ER VEEL LICHT IS.\n--HOGE VALUE GEEFT as")
+            os.system("sudo python /home/pi/ldr2.py")
+    if KEUZE == 5:
+ 	    os.system('clear')
+            print ("JE KOOS VOOR DE OPTIE: ALARMSYSTEEM TESTEN.")
+            print ("(-------------------------------------------------------)")
+            print ("MOTION DETECTION TRIGGERD!!! SOMEONE IS BREAKING IN!!!")
+            print ("(-------------------------------------------------------)")
+            os.system ("sudo python /home/pi/Project-CSN/alarmpro.py")                
+    if KEUZE == 6:
+            os.system('clear')
+            print ("JE KOOS VOOR DE OPTIE: MOTION SENSOR STARTEN.")
+            os.system ("date")
+            def motion_detect():
+                try:
+                    while True:
+                        if GPIO.input(4) == 1:
+                            os.system ("sudo python /home/pi/Project-CSN/alarmpro.py")
+                except (GPIO.input(22) == False):
+                    print ("(---------------------------------------------)")
+                    print ("--SYSTEEM UITGESCHAKELD \n--FIJNE DAG VERDER!")
+                    print ("(---------------------------------------------)")
+                    GPIO.output(22,0)
+                    time.sleep(.23)
+                    GPIO.output(22,1)
+                    time.sleep(.23)
+                    time.sleep(2)
+                    GPIO.cleanup()
+                    sys.exit()
+            if __name__ == "__main__":
+                motion_detect()
+    if KEUZE == 7:
+            os.system("clear")
+            print ("JE KOOS VOOR DE OPTIE: SYSTEEM UITSCHAKELEN")
+            print ("(----------------------------------------)")
+            print ("--SYSTEEM UITGESCHAKELD \n--FIJNE DAG VERDER!")
+            print ("(----------------------------------------)")
+            GPIO.cleanup()
+            sys.exit()
+    if KEUZE == 8:
+            os.system("clear")
+            print ("JE KOOS VOOR DE OPTIE: MINI-PROJECT CIJFER BEREKENEN")
+            print ("(--------------------------------------------------------)")
+            print ("c^2*2,353*0 ^(-8)+h*e^(-5c*t)=1,3583*11^(-5)= 10+")
+            print ("(--------------------------------------------------------)")
+    if ( GPIO.input(22) == False ):
+            print ("(-------------------------------------------)")
+            print ("--SYSTEEM UITGESCHAKELD \n--FIJNE DAG VERDER!")
+            print ("(-------------------------------------------)")
+            GPIO.output(23,0)
+            time.sleep(.22)
+            GPIO.output(23,1)
+            time.sleep(.22)
+            time.sleep(2)
+            GPIO.cleanup()
+            sys.exit()
+
+    if KEUZE == 9:
+        keuze = input("VOOR ALARM SYSTEEM PRO +. Kies 1")
+        if keuze == 1:
+            os.system('clear')
+            print ("WELKOM BIJ ALARMSYSTEEM PRO.")
+            os.system ("date")
+            def motion_detect():
+                    while True:
+                        if GPIO.input(4) == 1:
+                            os.system("sudo python /home/pi/Project-CSN/alarmpro2.py")
+            motion_detect()
+
+    if KEUZE == 10:
+	print ("JE KOOS VOOR DE OPTIE WACHTWOORD WIJZIGEN")
+        if GPIO.input(24) == True:
+            nieuwe_username = raw_input('Voer uw nieuwe gebruikersnaam in: ')
+            nieuw_wachtwoord = raw_input('Voer uw nieuwe wachtwoord in: ')
+            wachtwoord_gelijk = raw_input('Voer uw nieuwe wachtwoord nog een keer in: ')
+            if nieuw_wachtwoord == wachtwoord_gelijk:
+                username = open('username.txt', 'w')
+                password = open('password.txt', 'w')
+                username.write(nieuwe_username)
+                password.write(wachtwoord_gelijk)
+                print("Bedankt voor het wijzigen. Het systeem word nu afgesloten.")
+                username.close()
+                password.close()
+                GPIO.cleanup()
+                sys.exit()
+            else:
+                print("Wachtwoord is niet gewijzigd.")
+                continue
+        else:
+            continue
+
+    if KEUZE == 11:
+        os.system("clear")
+        print ("JE KOOS VOOR DE OPTIE: FOTO MAKEN")
+        print ("ER WORDEN 5 FOTO'S GEMAAKT \n CHECK JE DOCUMENTEN OM DE FOTO'S TE BEKIJKEN.")
+        print ("(----------------------------------------)")
+        camera = picamera.PiCamera()
+        camera.resolution = (2592, 1944)
+        camera.brightness = 70
+        camera.sharpness = 0
+        camera.contrast = 20
+        camera.brightness = 50
+        camera.saturation = 0
+        camera.ISO = 0
+        camera.video_stabilization = False
+        camera.exposure_compensation = 0
+        camera.exposure_mode = 'auto'
+        camera.meter_mode = 'average'
+        camera.awb_mode = 'auto'
+        camera.image_effect = 'none'
+        camera.color_effects = None
+        camera.rotation = 0
+        camera.hflip = False
+        camera.vflip = False
+        camera.crop = (0.0, 0.0, 1.0, 1.0)
+        camera.capture('image1.jpg')
+        sleep(2)
+        camera.capture('image2.jpg')
+        sleep (2)
+        camera.capture("image3.jpg")
+        sleep (2)
+        camera.capture('image4.jpg')
+        sleep (2)
+        camera.capture("image5.jpg")
+        GPIO.cleanup()
+        sys.exit()
+
+    if KEUZE == 12:
+        os.system("clear")
+        print ("JE KOOS VOOR DE OPTIE: VIDEO MAKEN")
+        print ("ER WORDEN 5 FOTO'S GEMAAKT \n CHECK JE DOCUMENTEN OM DE FOTO'S TE BEKIJKEN.")
+        print ("(----------------------------------------)")
+        camera = picamera.PiCamera()
+        camera.resolution = (1920, 1080)
+        camera.brightness = 70
+        camera.sharpness = 0
+        camera.contrast = 30
+        camera.brightness = 50
+        camera.saturation = 0
+        camera.ISO = 0
+        camera.video_stabilization = False
+        camera.exposure_compensation = 0
+        camera.exposure_mode = 'auto'
+        camera.meter_mode = 'average'
+        camera.awb_mode = 'auto'
+        camera.image_effect = 'none'
+        camera.color_effects = None
+        camera.rotation = 0
+        camera.hflip = False
+        camera.vflip = False
+        camera.crop = (0.0, 0.0, 1.0, 1.0)
+        camera.start_recording('video1.h264')
+        sleep(5)
+        camera.stop_recording()
+        GPIO.cleanup()
+        sys.exit()
+
+    if KEUZE == 13:
+        os.system('clear')
+        print ("JE KOOS VOOR DE OPTIE: MOTION SENSOR + CAMERA.")
+        os.system ("date")
+        def motion_detect():
+            try:
+                while True:
+                    if GPIO.input(4) == 1:
+                        os.system ("sudo python /home/pi/Project-CSN/alarmpro2.py")
+            except (GPIO.input(22) == False):
+                print ("(---------------------------------------------)")
+                print ("--SYSTEEM UITGESCHAKELD \n--FIJNE DAG VERDER!")
+                print ("(---------------------------------------------)")
+                GPIO.output(22,0)
+                time.sleep(.23)
+                GPIO.output(22,1)
+                time.sleep(.23)
+                time.sleep(2)
+                GPIO.cleanup()
+                sys.exit()
+        if __name__ == "__main__":
+            motion_detect()
+
+
+    if 
